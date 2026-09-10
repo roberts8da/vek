@@ -8,7 +8,7 @@ chromium.use(StealthPlugin());
 
 /* ================= CONFIG ================= */
 
-const TARGET_URL = "https://vektalnodes.in/ref/CEJRAR";
+const TARGET_URL = "https://vektalnodes.in/ref/JTWNBO";
 const SCREEN_DIR = path.resolve(__dirname, "screenshots");
 
 /* ================= UTILS ================= */
