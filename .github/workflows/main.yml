@@ -23,7 +23,7 @@ jobs:
       - name: Checkout scripts repo
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.repository_owner }}/teoheberg-reg
+          repository: ${{ github.repository_owner }}/vekt
           token: ${{ secrets.PRIVATE_REPO_TOKEN }}
           path: scripts
 
@@ -33,7 +33,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "24"
+          node-version: "20"
 
       # =========================
       # 3️⃣ 安装依赖
