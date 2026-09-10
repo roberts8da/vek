@@ -1,0 +1,92 @@
+name: vektal js Register (Playwright + WARP)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "10 */5 * * *"   # 每 5 小时运行一次
+
+jobs:
+  run:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+
+    steps:
+      # =========================
+      # 0️⃣ checkout 主仓库
+      # =========================
+      - name: Checkout main repo
+        uses: actions/checkout@v4
+
+      # =========================
+      # 1️⃣ checkout 脚本仓库
+      # =========================
+      - name: Checkout scripts repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/teoheberg-reg
+          token: ${{ secrets.PRIVATE_REPO_TOKEN }}
+          path: scripts
+
+      # =========================
+      # 2️⃣ 安装 Node.js
+      # =========================
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # =========================
+      # 3️⃣ 安装依赖
+      # =========================
+      - name: Install dependencies
+        run: |
+          cd scripts
+          npm init -y
+          npm install playwright playwright-extra puppeteer-extra-plugin-stealth
+
+      # =========================
+      # 4️⃣ 安装 Playwright 浏览器
+      # =========================
+      - name: Install Playwright Browsers
+        run: |
+          cd scripts
+          npx playwright install chromium --with-deps
+
+      # =========================
+      # 5️⃣ WARP 网络
+      # =========================
+      - name: Enable WARP
+        uses: fscarmen/warp-on-actions@v1.3
+        with:
+          stack: dual
+          mode: client
+
+      # =========================
+      # 6️⃣ 检查 IP
+      # =========================
+      - name: Check IP
+        run: |
+          echo "🌍 Current IP:"
+          curl -s https://api.ipify.org
+          echo ""
+          curl -s https://ipinfo.io
+
+      # =========================
+      # 7️⃣ 运行脚本
+      # =========================
+      - name: Run script
+        run: |
+          cd scripts
+          mkdir -p screenshots
+          node vektal_register.js
+
+      # =========================
+      # 8️⃣ 上传截图
+      # =========================
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenshots
+          path: scripts/screenshots/**
+          if-no-files-found: warn
